@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     getData = () => {
       let URL =
-        "http://api.openweathermap.org/data/2.5/forecast?q=Wroclaw,PL&APPID=6753e73d5ef9b6dd559417b3c2d59020";
+        "https://api.openweathermap.org/data/2.5/forecast?q=Wroclaw,PL&APPID=6753e73d5ef9b6dd559417b3c2d59020";
 
       fetch(URL)
         .then(response => {

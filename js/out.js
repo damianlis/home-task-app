@@ -10310,7 +10310,7 @@ document.addEventListener("DOMContentLoaded", function () {
       var _this3 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
       _this3.getData = function () {
-        var URL = "http://api.openweathermap.org/data/2.5/forecast?q=Wroclaw,PL&APPID=6753e73d5ef9b6dd559417b3c2d59020";
+        var URL = "https://api.openweathermap.org/data/2.5/forecast?q=Wroclaw,PL&APPID=6753e73d5ef9b6dd559417b3c2d59020";
 
         fetch(URL).then(function (response) {
           return response.json();
