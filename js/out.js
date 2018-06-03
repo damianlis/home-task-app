@@ -10211,7 +10211,7 @@ document.addEventListener("DOMContentLoaded", function () {
               _react2.default.createElement(
                 "th",
                 null,
-                "Temperature in next five days"
+                "Temperature in next five days in Wroclaw"
               )
             )
           ),

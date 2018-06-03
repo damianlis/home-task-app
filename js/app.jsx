@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <table style={{ textAlign: "center" }}>
           <thead>
             <tr>
-              <th>Temperature in next five days</th>
+              <th>Temperature in next five days in Wroclaw</th>
             </tr>
           </thead>
           <tbody>
