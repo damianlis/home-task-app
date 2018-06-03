@@ -10099,50 +10099,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
       var _this = _possibleConstructorReturn(this, (TempTable.__proto__ || Object.getPrototypeOf(TempTable)).call(this, props));
 
-      _this.showMin = function () {
+      _this.getDateAndTemp = function () {
         var arrOfTemp = _this.props.weatherData.list.map(function (elem) {
           return elem.main.temp.toFixed(1);
         });
-        //console.log(arrOfTemp);
         _this.setState({
-          min: Math.min.apply(Math, _toConsumableArray(arrOfTemp))
+          arrOfTemp: arrOfTemp
+        });
+      };
+
+      _this.showMin = function () {
+        _this.setState({
+          min: Math.min.apply(Math, _toConsumableArray(_this.state.arrOfTemp))
         });
       };
 
       _this.showMax = function () {
-        var arrOfTemp = _this.props.weatherData.list.map(function (elem) {
-          return elem.main.temp.toFixed(1);
-        });
-        //console.log(arrOfTemp);
         _this.setState({
-          max: Math.max.apply(Math, _toConsumableArray(arrOfTemp))
+          max: Math.max.apply(Math, _toConsumableArray(_this.state.arrOfTemp))
         });
       };
 
       _this.showMean = function () {
-        var total = _this.props.weatherData.list.reduce(function (total, currValue) {
-          return total + currValue.main.temp;
+        var numbArr = _this.state.arrOfTemp.map(Number);
+        var total = numbArr.reduce(function (total, currValue) {
+          return total + currValue;
         }, 0);
-        var calculateMean = total / _this.props.weatherData.list.length;
+        var calculateMean = total / _this.state.arrOfTemp.length;
         _this.setState({
           mean: calculateMean.toFixed(1)
         });
       };
 
       _this.showMode = function () {
-        var arrOfTemp = _this.props.weatherData.list.map(function (elem) {
-          return elem.main.temp.toFixed(1);
-        });
         var counts = {};
-        for (var i = 0; i < arrOfTemp.length; i++) {
-          var number = arrOfTemp[i];
+        for (var i = 0; i < _this.state.arrOfTemp.length; i++) {
+          var number = _this.state.arrOfTemp[i];
           if (counts[number] === undefined) {
             counts[number] = 1;
           } else {
             counts[number] = counts[number] + 1;
           }
         }
-        //console.log(counts);
         var sortArr = Object.keys(counts).sort(function (a, b) {
           return counts[b] - counts[a];
         });
@@ -10151,16 +10149,34 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       };
 
+      _this.insertValue = function () {
+        var numbWithComa = _this.state.inputValue.replace(/\,/g, ".");
+        var createNumb = Number(numbWithComa);
+        var numbFixed = createNumb.toFixed(1);
+        var mergeArr = [].concat(_toConsumableArray(_this.state.arrOfTemp), [numbFixed]);
+        _this.setState({
+          arrOfTemp: mergeArr,
+          inputValue: ""
+        });
+      };
+
       _this.state = {
+        arrOfTemp: [],
         min: "",
         max: "",
         mean: "",
-        mode: ""
+        mode: "",
+        inputValue: ""
       };
       return _this;
     }
 
     _createClass(TempTable, [{
+      key: "componentWillMount",
+      value: function componentWillMount() {
+        this.getDateAndTemp();
+      }
+    }, {
       key: "componentDidMount",
       value: function componentDidMount() {
         this.showMin();
@@ -10169,8 +10185,20 @@ document.addEventListener("DOMContentLoaded", function () {
         this.showMode();
       }
     }, {
+      key: "componentDidUpdate",
+      value: function componentDidUpdate(prevProps, prevState) {
+        if (prevState.arrOfTemp !== this.state.arrOfTemp) {
+          this.showMin();
+          this.showMax();
+          this.showMean();
+          this.showMode();
+        }
+      }
+    }, {
       key: "render",
       value: function render() {
+        var _this2 = this;
+
         return _react2.default.createElement(
           "table",
           { style: { textAlign: "center" } },
@@ -10183,35 +10211,24 @@ document.addEventListener("DOMContentLoaded", function () {
               _react2.default.createElement(
                 "th",
                 null,
-                "Date"
-              ),
-              _react2.default.createElement(
-                "th",
-                null,
-                "Temperature"
+                "Temperature in next five days"
               )
             )
           ),
           _react2.default.createElement(
             "tbody",
             null,
-            this.props.weatherData.list.map(function (elem, index) {
+            this.state.arrOfTemp.map(function (elem, index) {
               return _react2.default.createElement(
                 "tr",
                 { key: index },
                 _react2.default.createElement(
                   "td",
                   null,
-                  elem.dt_txt
-                ),
-                _react2.default.createElement(
-                  "td",
-                  null,
-                  elem.main.temp.toFixed(1)
+                  elem
                 )
               );
-            }),
-            _react2.default.createElement("tr", null)
+            })
           ),
           _react2.default.createElement(
             "tfoot",
@@ -10255,6 +10272,26 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Mode is: ",
                 this.state.mode
               )
+            ),
+            _react2.default.createElement(
+              "tr",
+              null,
+              _react2.default.createElement(
+                "td",
+                null,
+                _react2.default.createElement("input", {
+                  value: this.state.inputValue,
+                  onChange: function onChange(event) {
+                    _this2.setState({ inputValue: event.currentTarget.value });
+                  },
+                  placeholder: "Write a temp"
+                }),
+                _react2.default.createElement(
+                  "button",
+                  { onClick: this.insertValue },
+                  "Add temp"
+                )
+              )
             )
           )
         );
@@ -10270,18 +10307,16 @@ document.addEventListener("DOMContentLoaded", function () {
     function App(props) {
       _classCallCheck(this, App);
 
-      var _this2 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+      var _this3 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-      _this2.getData = function () {
+      _this3.getData = function () {
         var URL = "http://api.openweathermap.org/data/2.5/forecast?q=Wroclaw,PL&APPID=6753e73d5ef9b6dd559417b3c2d59020";
 
         fetch(URL).then(function (response) {
           return response.json();
         }).then(function (data) {
           console.log(data);
-          //console.log(data.city.name);
-          //console.log(data.list[0].main.temp);
-          _this2.setState({
+          _this3.setState({
             weatherData: data
           });
         }).catch(function (error) {
@@ -10289,10 +10324,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       };
 
-      _this2.state = {
+      _this3.state = {
         weatherData: ""
       };
-      return _this2;
+      return _this3;
     }
 
     _createClass(App, [{

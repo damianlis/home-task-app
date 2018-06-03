@@ -6,57 +6,57 @@ document.addEventListener("DOMContentLoaded", function() {
     constructor(props) {
       super(props);
       this.state = {
+        arrOfTemp: [],
         min: "",
         max: "",
         mean: "",
-        mode: ""
+        mode: "",
+        inputValue: ""
       };
     }
 
-    showMin = () => {
+    getDateAndTemp = () => {
       let arrOfTemp = this.props.weatherData.list.map(elem => {
         return elem.main.temp.toFixed(1);
       });
-      //console.log(arrOfTemp);
       this.setState({
-        min: Math.min(...arrOfTemp)
+        arrOfTemp: arrOfTemp
+      });
+    };
+
+    showMin = () => {
+      this.setState({
+        min: Math.min(...this.state.arrOfTemp)
       });
     };
 
     showMax = () => {
-      let arrOfTemp = this.props.weatherData.list.map(elem => {
-        return elem.main.temp.toFixed(1);
-      });
-      //console.log(arrOfTemp);
       this.setState({
-        max: Math.max(...arrOfTemp)
+        max: Math.max(...this.state.arrOfTemp)
       });
     };
 
     showMean = () => {
-      let total = this.props.weatherData.list.reduce((total, currValue) => {
-        return total + currValue.main.temp;
+      let numbArr = this.state.arrOfTemp.map(Number);
+      let total = numbArr.reduce((total, currValue) => {
+        return total + currValue;
       }, 0);
-      let calculateMean = total / this.props.weatherData.list.length;
+      let calculateMean = total / this.state.arrOfTemp.length;
       this.setState({
         mean: calculateMean.toFixed(1)
       });
     };
 
     showMode = () => {
-      let arrOfTemp = this.props.weatherData.list.map(elem => {
-        return elem.main.temp.toFixed(1);
-      });
       let counts = {};
-      for (let i = 0; i < arrOfTemp.length; i++) {
-        let number = arrOfTemp[i];
+      for (let i = 0; i < this.state.arrOfTemp.length; i++) {
+        let number = this.state.arrOfTemp[i];
         if (counts[number] === undefined) {
           counts[number] = 1;
         } else {
           counts[number] = counts[number] + 1;
         }
       }
-      //console.log(counts);
       let sortArr = Object.keys(counts).sort((a, b) => {
         return counts[b] - counts[a];
       });
@@ -65,6 +65,10 @@ document.addEventListener("DOMContentLoaded", function() {
       });
     };
 
+    componentWillMount() {
+      this.getDateAndTemp();
+    }
+
     componentDidMount() {
       this.showMin();
       this.showMax();
@@ -72,25 +76,42 @@ document.addEventListener("DOMContentLoaded", function() {
       this.showMode();
     }
 
+    componentDidUpdate(prevProps, prevState) {
+      if (prevState.arrOfTemp !== this.state.arrOfTemp) {
+        this.showMin();
+        this.showMax();
+        this.showMean();
+        this.showMode();
+      }
+    }
+
+    insertValue = () => {
+      let numbWithComa = this.state.inputValue.replace(/\,/g, ".");
+      let createNumb = Number(numbWithComa);
+      let numbFixed = createNumb.toFixed(1);
+      let mergeArr = [...this.state.arrOfTemp, numbFixed];
+      this.setState({
+        arrOfTemp: mergeArr,
+        inputValue: ""
+      });
+    };
+
     render() {
       return (
         <table style={{ textAlign: "center" }}>
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Temperature</th>
+              <th>Temperature in next five days</th>
             </tr>
           </thead>
           <tbody>
-            {this.props.weatherData.list.map((elem, index) => {
+            {this.state.arrOfTemp.map((elem, index) => {
               return (
                 <tr key={index}>
-                  <td>{elem.dt_txt}</td>
-                  <td>{elem.main.temp.toFixed(1)}</td>
+                  <td>{elem}</td>
                 </tr>
               );
             })}
-            <tr />
           </tbody>
           <tfoot>
             <tr>
@@ -111,6 +132,18 @@ document.addEventListener("DOMContentLoaded", function() {
             <tr>
               <td colSpan="2" style={{ fontSize: "20px" }}>
                 Mode is: {this.state.mode}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input
+                  value={this.state.inputValue}
+                  onChange={event => {
+                    this.setState({ inputValue: event.currentTarget.value });
+                  }}
+                  placeholder="Write a temp"
+                />
+                <button onClick={this.insertValue}>Add temp</button>
               </td>
             </tr>
           </tfoot>
@@ -137,8 +170,6 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(data => {
           console.log(data);
-          //console.log(data.city.name);
-          //console.log(data.list[0].main.temp);
           this.setState({
             weatherData: data
           });
