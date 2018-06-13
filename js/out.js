@@ -10105,7 +10105,7 @@ document.addEventListener("DOMContentLoaded", function () {
       _this.getTemp = function () {
         var arrOfTemp = _this.props.weatherData.list.map(function (elem) {
           return elem.main.temp.toFixed(1); //get temp from every element of weatherData by map function;
-        }); //toFixed(1) = get number with one digit after coma;
+        }); //toFixed(1) = get number with one digit after dot;
         _this.setState({
           arrOfTemp: arrOfTemp //set state -> array of temps
         });
@@ -10130,7 +10130,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 0);
         var calculateMean = total / _this.state.arrOfTemp.length;
         _this.setState({
-          mean: calculateMean.toFixed(1) //toFixed(1) = get number with one digit after coma and set state;
+          mean: calculateMean.toFixed(1) //toFixed(1) = get number with one digit after dot and set state;
         });
       };
 
@@ -10157,13 +10157,15 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       _this.insertValue = function () {
-        var numbWithComa = _this.state.inputValue.replace(/\,/g, ".");
-        var createNumb = Number(numbWithComa);
-        var numbFixed = createNumb.toFixed(1);
-        var mergeArr = [].concat(_toConsumableArray(_this.state.arrOfTemp), [numbFixed]);
+        //create function
+        var numbWithComa = _this.state.inputValue.replace(/\,/g, "."); //inputValue is string with comma, we change
+        var createNumb = Number(numbWithComa); //all commas to dot in string, next we change
+        var numbFixed = createNumb.toFixed(1); //string into number, next we get number with
+        var mergeArr = [].concat(_toConsumableArray(_this.state.arrOfTemp), [numbFixed]); //one digit after dot. Using spread operator
         _this.setState({
-          arrOfTemp: mergeArr,
-          inputValue: ""
+          //we push inserted value and it lets us create
+          arrOfTemp: mergeArr, //new array of temps with values are the same
+          inputValue: "" //type. We set state and reset inputValue.
         });
       };
 
@@ -10211,101 +10213,109 @@ document.addEventListener("DOMContentLoaded", function () {
       value: function render() {
         var _this2 = this;
 
-        return _react2.default.createElement(
-          "table",
-          { style: { textAlign: "center" } },
+        return (
+          //create table, our view
           _react2.default.createElement(
-            "thead",
-            null,
+            "table",
+            { style: { textAlign: "center" } },
             _react2.default.createElement(
-              "tr",
+              "thead",
               null,
               _react2.default.createElement(
-                "th",
+                "tr",
                 null,
                 _react2.default.createElement(
-                  "h3",
+                  "th",
                   null,
-                  "Temperature in next five days in Wroclaw"
+                  _react2.default.createElement(
+                    "h3",
+                    null,
+                    "Temperature in next five days in Wroclaw"
+                  )
                 )
               )
-            )
-          ),
-          _react2.default.createElement(
-            "tbody",
-            null,
-            this.state.arrOfTemp.map(function (elem, index) {
-              return _react2.default.createElement(
+            ),
+            _react2.default.createElement(
+              "tbody",
+              null,
+              this.state.arrOfTemp.map(function (elem, index) {
+                //map our state to get every element(every temp)
+                return (
+                  //when map every returned element need unique key
+                  _react2.default.createElement(
+                    "tr",
+                    { key: index },
+                    _react2.default.createElement(
+                      "td",
+                      null,
+                      elem
+                    )
+                  )
+                );
+              })
+            ),
+            _react2.default.createElement(
+              "tfoot",
+              null,
+              _react2.default.createElement(
                 "tr",
-                { key: index },
+                null,
+                _react2.default.createElement(
+                  "td",
+                  { colSpan: "2", style: { fontSize: "20px" } },
+                  "Min is: ",
+                  this.state.min
+                )
+              ),
+              _react2.default.createElement(
+                "tr",
+                null,
+                _react2.default.createElement(
+                  "td",
+                  { colSpan: "2", style: { fontSize: "20px" } },
+                  "Max is: ",
+                  this.state.max
+                )
+              ),
+              _react2.default.createElement(
+                "tr",
+                null,
+                _react2.default.createElement(
+                  "td",
+                  { colSpan: "2", style: { fontSize: "20px" } },
+                  "Mean is: ",
+                  this.state.mean
+                )
+              ),
+              _react2.default.createElement(
+                "tr",
+                null,
+                _react2.default.createElement(
+                  "td",
+                  { colSpan: "2", style: { fontSize: "20px" } },
+                  "Mode is: ",
+                  this.state.mode
+                )
+              ),
+              _react2.default.createElement(
+                "tr",
+                null,
                 _react2.default.createElement(
                   "td",
                   null,
-                  elem
-                )
-              );
-            })
-          ),
-          _react2.default.createElement(
-            "tfoot",
-            null,
-            _react2.default.createElement(
-              "tr",
-              null,
-              _react2.default.createElement(
-                "td",
-                { colSpan: "2", style: { fontSize: "20px" } },
-                "Min is: ",
-                this.state.min
-              )
-            ),
-            _react2.default.createElement(
-              "tr",
-              null,
-              _react2.default.createElement(
-                "td",
-                { colSpan: "2", style: { fontSize: "20px" } },
-                "Max is: ",
-                this.state.max
-              )
-            ),
-            _react2.default.createElement(
-              "tr",
-              null,
-              _react2.default.createElement(
-                "td",
-                { colSpan: "2", style: { fontSize: "20px" } },
-                "Mean is: ",
-                this.state.mean
-              )
-            ),
-            _react2.default.createElement(
-              "tr",
-              null,
-              _react2.default.createElement(
-                "td",
-                { colSpan: "2", style: { fontSize: "20px" } },
-                "Mode is: ",
-                this.state.mode
-              )
-            ),
-            _react2.default.createElement(
-              "tr",
-              null,
-              _react2.default.createElement(
-                "td",
-                null,
-                _react2.default.createElement("input", {
-                  value: this.state.inputValue,
-                  onChange: function onChange(event) {
-                    _this2.setState({ inputValue: event.currentTarget.value });
-                  },
-                  placeholder: "Write a temp"
-                }),
-                _react2.default.createElement(
-                  "button",
-                  { onClick: this.insertValue },
-                  "Add temp"
+                  _react2.default.createElement("input", {
+                    value: this.state.inputValue //event handling, in brief every change makes causes what is inserted in input 
+                    , onChange: function onChange(event) {
+                      //is the same as state value & what is in state is the same as input value
+                      _this2.setState({ inputValue: event.currentTarget.value }); //change state which is equal to input value
+                    },
+                    placeholder: "Write a temp"
+                  }),
+                  _react2.default.createElement(
+                    "button",
+                    { onClick: this.insertValue },
+                    "Add temp"
+                  )
                 )
               )
             )

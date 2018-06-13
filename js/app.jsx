@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
     getTemp = () => {
       let arrOfTemp = this.props.weatherData.list.map(elem => {
         return elem.main.temp.toFixed(1); //get temp from every element of weatherData by map function;
-      }); //toFixed(1) = get number with one digit after coma;
+      }); //toFixed(1) = get number with one digit after dot;
       this.setState({
         arrOfTemp: arrOfTemp //set state -> array of temps
       });
@@ -47,61 +47,72 @@ document.addEventListener("DOMContentLoaded", function() {
       }, 0);
       let calculateMean = total / this.state.arrOfTemp.length;
       this.setState({
-        mean: calculateMean.toFixed(1)  //toFixed(1) = get number with one digit after coma and set state;
+        mean: calculateMean.toFixed(1) //toFixed(1) = get number with one digit after dot and set state;
       });
     };
 
-    showMode = () => {  //get temp which appear most often
-      let counts = {};  //create empty object
-      for (let i = 0; i < this.state.arrOfTemp.length; i++) { //for loop
+    showMode = () => {
+      //get temp which appear most often
+      let counts = {}; //create empty object
+      for (let i = 0; i < this.state.arrOfTemp.length; i++) {
+        //for loop
         let number = this.state.arrOfTemp[i]; //take one element
-        if (counts[number] === undefined) { //if this one element not exist in counts, he's a key and it get value '1'
+        if (counts[number] === undefined) {
+          //if this one element not exist in counts, he's a key and it get value '1'
           counts[number] = 1;
         } else {
-          counts[number] = counts[number] + 1;  //if exist, he's a key and we add to his value '+1'
+          counts[number] = counts[number] + 1; //if exist, he's a key and we add to his value '+1'
         }
       }
-      let sortArr = Object.keys(counts).sort((a, b) => {  //get array of given object's property names
+      let sortArr = Object.keys(counts).sort((a, b) => {
+        //get array of given object's property names
         return counts[b] - counts[a]; //sort keys with highest value to lowest value
       });
       this.setState({
-        mode: sortArr[0]  //key with highest value which is first in array is our mode temp
+        mode: sortArr[0] //key with highest value which is first in array is our mode temp
       });
     };
 
-    componentWillMount() {  //get all temps just before mounting & render
+    componentWillMount() {
+      //get all temps just before mounting & render
       this.getTemp();
     }
 
-    componentDidMount() { //invoked functions immediately after mounting
+    componentDidMount() {
+      //invoked functions immediately after mounting
       this.showMin();
       this.showMax();
       this.showMean();
       this.showMode();
     }
 
-    componentDidUpdate(prevProps, prevState) {  //component lifecycle - if we add any temp to our state with temps,
-      if (prevState.arrOfTemp !== this.state.arrOfTemp) { //component is updating because previous state is different
-        this.showMin();                                   //from actual state and all function
-        this.showMax();                                   //which calculate values are invoked again
+    componentDidUpdate(prevProps, prevState) {
+      //component lifecycle - if we add any temp to our state with temps,
+      if (prevState.arrOfTemp !== this.state.arrOfTemp) {
+        //component is updating because previous state is different
+        this.showMin(); //from actual state and all function
+        this.showMax(); //which calculate values are invoked again
         this.showMean();
         this.showMode();
       }
     }
 
     insertValue = () => {
-      let numbWithComa = this.state.inputValue.replace(/\,/g, ".");
-      let createNumb = Number(numbWithComa);
-      let numbFixed = createNumb.toFixed(1);
-      let mergeArr = [...this.state.arrOfTemp, numbFixed];
+      //create function
+      let numbWithComa = this.state.inputValue.replace(/\,/g, "."); //inputValue is string with comma, we change
+      let createNumb = Number(numbWithComa); //all commas to dot in string, next we change
+      let numbFixed = createNumb.toFixed(1); //string into number, next we get number with
+      let mergeArr = [...this.state.arrOfTemp, numbFixed]; //one digit after dot. Using spread operator
       this.setState({
-        arrOfTemp: mergeArr,
-        inputValue: ""
+        //we push inserted value and it lets us create
+        arrOfTemp: mergeArr, //new array of temps with values are the same
+        inputValue: "" //type. We set state and reset inputValue.
       });
     };
 
     render() {
       return (
+        //create table, our view
         <table style={{ textAlign: "center" }}>
           <thead>
             <tr>
@@ -112,7 +123,9 @@ document.addEventListener("DOMContentLoaded", function() {
           </thead>
           <tbody>
             {this.state.arrOfTemp.map((elem, index) => {
+              //map our state to get every element(every temp)
               return (
+                //when map every returned element need unique key
                 <tr key={index}>
                   <td>{elem}</td>
                 </tr>
@@ -143,9 +156,9 @@ document.addEventListener("DOMContentLoaded", function() {
             <tr>
               <td>
                 <input
-                  value={this.state.inputValue}
-                  onChange={event => {
-                    this.setState({ inputValue: event.currentTarget.value });
+                  value={this.state.inputValue} //event handling, in brief every change makes causes what is inserted in input 
+                  onChange={event => {          //is the same as state value & what is in state is the same as input value
+                    this.setState({ inputValue: event.currentTarget.value }); //change state which is equal to input value
                   }}
                   placeholder="Write a temp"
                 />
