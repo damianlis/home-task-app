@@ -10091,61 +10091,68 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 document.addEventListener("DOMContentLoaded", function () {
+  //special event that starts when DOM tree is loaded
+  //our JS code should be inside
   var TempTable = function (_Component) {
     _inherits(TempTable, _Component);
 
+    //create TempTable component
     function TempTable(props) {
       _classCallCheck(this, TempTable);
 
       var _this = _possibleConstructorReturn(this, (TempTable.__proto__ || Object.getPrototypeOf(TempTable)).call(this, props));
 
-      _this.getDateAndTemp = function () {
+      _this.getTemp = function () {
         var arrOfTemp = _this.props.weatherData.list.map(function (elem) {
-          return elem.main.temp.toFixed(1);
-        });
+          return elem.main.temp.toFixed(1); //get temp from every element of weatherData by map function;
+        }); //toFixed(1) = get number with one digit after coma;
         _this.setState({
-          arrOfTemp: arrOfTemp
+          arrOfTemp: arrOfTemp //set state -> array of temps
         });
       };
 
       _this.showMin = function () {
         _this.setState({
-          min: Math.min.apply(Math, _toConsumableArray(_this.state.arrOfTemp))
-        });
+          min: Math.min.apply(Math, _toConsumableArray(_this.state.arrOfTemp)) //return the number with the lowest value, we use here
+        }); //also spread operator to get particular numbers as arguments
       };
 
       _this.showMax = function () {
         _this.setState({
-          max: Math.max.apply(Math, _toConsumableArray(_this.state.arrOfTemp))
-        });
+          max: Math.max.apply(Math, _toConsumableArray(_this.state.arrOfTemp)) //return the number with the highest value, we use here
+        }); //also spread operator to get particular numbers as arguments
       };
 
       _this.showMean = function () {
-        var numbArr = _this.state.arrOfTemp.map(Number);
+        var numbArr = _this.state.arrOfTemp.map(Number); //in return we get array of numbers (not array of strings)
         var total = numbArr.reduce(function (total, currValue) {
-          return total + currValue;
+          return total + currValue; //getting sum
         }, 0);
         var calculateMean = total / _this.state.arrOfTemp.length;
         _this.setState({
-          mean: calculateMean.toFixed(1)
+          mean: calculateMean.toFixed(1) //toFixed(1) = get number with one digit after coma and set state;
         });
       };
 
       _this.showMode = function () {
-        var counts = {};
+        //get temp which appear most often
+        var counts = {}; //create empty object
         for (var i = 0; i < _this.state.arrOfTemp.length; i++) {
-          var number = _this.state.arrOfTemp[i];
+          //for loop
+          var number = _this.state.arrOfTemp[i]; //take one element
           if (counts[number] === undefined) {
+            //if this one element not exist in counts, he's a key and it get value '1'
             counts[number] = 1;
           } else {
-            counts[number] = counts[number] + 1;
+            counts[number] = counts[number] + 1; //if exist, he's a key and we add to his value '+1'
           }
         }
         var sortArr = Object.keys(counts).sort(function (a, b) {
-          return counts[b] - counts[a];
+          //get array of given object's property names
+          return counts[b] - counts[a]; //sort keys with highest value to lowest value
         });
         _this.setState({
-          mode: sortArr[0]
+          mode: sortArr[0] //key with highest value which is first in array is our mode temp
         });
       };
 
@@ -10161,12 +10168,13 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       _this.state = {
-        arrOfTemp: [],
-        min: "",
-        max: "",
-        mean: "",
-        mode: "",
-        inputValue: ""
+        //set all necessary states
+        arrOfTemp: [], //here we push temps from weatherData
+        min: "", //minimal temp
+        max: "", //maximum temp
+        mean: "", //mean temp
+        mode: "", //mode temp
+        inputValue: "" //temp entered by us
       };
       return _this;
     }
@@ -10174,11 +10182,13 @@ document.addEventListener("DOMContentLoaded", function () {
     _createClass(TempTable, [{
       key: "componentWillMount",
       value: function componentWillMount() {
-        this.getDateAndTemp();
+        //get all temps just before mounting & render
+        this.getTemp();
       }
     }, {
       key: "componentDidMount",
       value: function componentDidMount() {
+        //invoked functions immediately after mounting
         this.showMin();
         this.showMax();
         this.showMean();
@@ -10187,9 +10197,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }, {
       key: "componentDidUpdate",
       value: function componentDidUpdate(prevProps, prevState) {
+        //component lifecycle - if we add any temp to our state with temps,
         if (prevState.arrOfTemp !== this.state.arrOfTemp) {
-          this.showMin();
-          this.showMax();
+          //component is updating because previous state is different
+          this.showMin(); //from actual state and all function
+          this.showMax(); //which calculate values are invoked again
           this.showMean();
           this.showMode();
         }
@@ -10308,28 +10320,32 @@ document.addEventListener("DOMContentLoaded", function () {
   var App = function (_Component2) {
     _inherits(App, _Component2);
 
+    //create component
     function App(props) {
       _classCallCheck(this, App);
 
       var _this3 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
       _this3.getData = function () {
+        //function where we fetch & set state
         var URL = "https://api.openweathermap.org/data/2.5/forecast?q=Wroclaw,PL&APPID=6753e73d5ef9b6dd559417b3c2d59020";
 
+        //save under variable link to our API with key
+
         fetch(URL).then(function (response) {
-          return response.json();
+          return response.json(); //we get response and we extracting JSON body content from response
         }).then(function (data) {
-          console.log(data);
+          console.log(data); //see what we get and how it looks and how to get to right data
           _this3.setState({
-            weatherData: data
+            weatherData: data //now our data will be avaible from state called 'weatherData'
           });
         }).catch(function (error) {
-          console.log(error);
+          console.log(error); //if we can't get data from API, we get error
         });
       };
 
       _this3.state = {
-        weatherData: ""
+        weatherData: "" //set general state where we have all data from API, at this moment is empty
       };
       return _this3;
     }
@@ -10337,15 +10353,18 @@ document.addEventListener("DOMContentLoaded", function () {
     _createClass(App, [{
       key: "componentWillMount",
       value: function componentWillMount() {
+        //method invoked just before mounting, called before render
         this.getData();
       }
     }, {
       key: "render",
       value: function render() {
+        //rendering component
         if (!this.state.weatherData) {
+          //if state is empty, empty div with nothing is render
           return _react2.default.createElement("div", null);
         } else {
-          return _react2.default.createElement(TempTable, { weatherData: this.state.weatherData });
+          return _react2.default.createElement(TempTable, { weatherData: this.state.weatherData }); //if state has something ;-)
         }
       }
     }]);
@@ -10353,7 +10372,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return App;
   }(_react.Component);
 
-  _reactDom2.default.render(_react2.default.createElement(App, null), document.getElementById("app"));
+  _reactDom2.default.render(_react2.default.createElement(App, null), document.getElementById("app")); //inject component App into DOM
 });
 
 /***/ }),
